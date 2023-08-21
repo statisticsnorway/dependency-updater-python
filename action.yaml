@@ -23,7 +23,7 @@ inputs:
 
 jobs:
   update-dependencies-python:
-    if: inputs.token == 'python-poetry'
+    if: inputs.language == 'python-poetry'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
