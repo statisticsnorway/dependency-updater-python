@@ -4,50 +4,43 @@ branding:
   icon: 'arrow-up-circle'
   color: 'green'
 inputs:
-  language:
-    type: choice
-    description: Suppported languages for autoupdating
-    options:
-      - python-poetry
-    required: true
   token:
     description: Token used to send pull requests
     required: false
-    default: ${{ secrets.GITHUB_TOKEN }}
+    default: ${{ github.token }}
   update-path:
     description: Path to directory to run the update-command. If not provided defaults to root
     required: false
   on-changes-command:
     description: Command to run if dependencies update and changes were detected. This can be version increments or extra checks.
     required: false
-
-jobs:
-  update-dependencies-python:
-    if: inputs.language == 'python-poetry'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
-        with:
-          python-version: "3.11"
-      - uses: Gr1N/setup-poetry@v8
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
-      - name: Print Poetry version
-        run: poetry --version
-      - name: Install poetry relax plugin
-        run: poetry self add poetry-relax
-      - name: Run autoupdate
-        shell: bash
-        env:
-          update_command: "poetry relax --update"
-          default_branch: ${{ github.event.repository.default_branch }}
-        run: |
-          ${{ github.action_path }}/autoupdate-dependencies.sh \
-          ${{ inputs.token }} \
-          $update_command \
-          $default_branch \
-          "${{ inputs.update-path }}?" \
-          "${{ inputs.on-changes-command }}?"
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+      with:
+        python-version: "3.11"
+    - uses: Gr1N/setup-poetry@v8
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pypoetry/virtualenvs
+        key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+    - name: Print Poetry version
+      shell: bash
+      run: poetry --version
+    - name: Install poetry relax plugin
+      shell: bash
+      run: poetry self add poetry-relax
+    - name: Run autoupdate
+      shell: bash
+      env:
+        update_command: "poetry relax --update"
+        default_branch: ${{ github.event.repository.default_branch }}
+      run: |
+        ${{ github.action_path }}/autoupdate-dependencies.sh \
+        ${{ inputs.token }} \
+        "${update_command}" \
+        "${default_branch}" \
+        "${{ inputs.update-path }}?" \
+        "${{ inputs.on-changes-command }}?"
