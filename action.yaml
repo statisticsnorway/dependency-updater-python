@@ -7,7 +7,7 @@ inputs:
   token:
     description: Token used to send pull requests
     required: false
-    default: secrets.API_GITHUB_WRITE_KEY
+    default: ${{ secrets.API_GITHUB_WRITE_KEY }}
   update-path:
     description: Path to directory to run the update-command. If not provided defaults to root
     required: false
