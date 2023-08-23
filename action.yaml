@@ -6,7 +6,8 @@ branding:
 inputs:
   token:
     description: Token used to send pull requests
-    required: true
+    required: false
+    default: secrets.API_GITHUB_WRITE_KEY
   update-path:
     description: Path to directory to run the update-command. If not provided defaults to root
     required: false
@@ -38,7 +39,7 @@ runs:
         default_branch: ${{ github.event.repository.default_branch }}
       run: |
         ${{ github.action_path }}/autoupdate-dependencies.sh \
-        ${{ secrets.API_GITHUB_WRITE_KEY }} \
+        ${{ inputs.token }} \
         "${update_command}" \
         "${default_branch}" \
         "${{ inputs.update-path }}?" \
