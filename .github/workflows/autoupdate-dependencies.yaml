@@ -37,6 +37,10 @@ jobs:
         with:
           app_id: ${{ secrets.DEPENDENCY_UPDATER_PYTHON_ID }}
           private_key: ${{ secrets.DEPENDENCY_UPDATER_PYTHON_PRIVATE_KEY }}
+      - name: Print files in folder
+        shell: bash
+        run: ls
+
       - name: Run autoupdate
         shell: bash
         env:
