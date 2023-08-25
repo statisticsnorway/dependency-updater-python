@@ -4,10 +4,6 @@ branding:
   icon: 'arrow-up-circle'
   color: 'green'
 inputs:
-  token:
-    description: Token used to send pull requests
-    required: false
-    default: "null"
   update-path:
     description: Path to directory to run the update-command. If not provided defaults to root
     required: false
