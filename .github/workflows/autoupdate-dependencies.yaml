@@ -43,7 +43,7 @@ jobs:
           update_command: "poetry relax --update"
           default_branch: ${{ github.event.repository.default_branch }}
         run: |
-          ${{ github.action_path }}/autoupdate-dependencies.sh \
+          bash autoupdate-dependencies.sh \
           ${{ steps.generate_token.outputs.token }} \
           "${update_command}" \
           "${default_branch}" \
