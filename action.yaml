@@ -4,6 +4,9 @@ branding:
   icon: 'arrow-up-circle'
   color: 'green'
 inputs:
+  token:
+    description: "Token for the Dependency Updater GitHub app"
+    required: true
   update-path:
     description: Path to directory to run the update-command. If not provided defaults to root
     required: false
@@ -13,15 +16,9 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Generate a token
-      id: generate_token
-      uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
-      with:
-        app_id: ${{ secrets.DEPENDENCY_UPDATER_GH_APP_ID }}
-        private_key: ${{ secrets.DEPENDENCY_UPDATER_GH_APP_PRIVATE_KEY }}
     - uses: actions/checkout@v2
       with:
-        token: ${{ steps.generate_token.outputs.token }}
+        token: ${{ inputs.token }}
     - uses: actions/setup-python@v1
       with:
         python-version: "3.11"
@@ -43,7 +40,7 @@ runs:
         default_branch: ${{ github.event.repository.default_branch }}
       run: |
         ${{ github.action_path }}/autoupdate-dependencies.sh \
-        ${{ steps.generate_token.outputs.token }} \
+        ${{ inputs.token }} \
         "${update_command}" \
         "${default_branch}" \
         "${{ inputs.update-path }}?" \
