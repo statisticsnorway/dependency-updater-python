@@ -81,7 +81,7 @@ if git --no-pager diff | grep diff; then
     git commit -a -m "$pr_title" --signoff
 
     # push the changes
-    git push -f -u
+    git push --force --set-upstream origin automated-dependencies-update
 
     echo "https://api.github.com/repos/$repo/pulls"
 
