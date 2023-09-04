@@ -8,12 +8,11 @@ update_command=$2
 default_branch_name=$3
 update_path=$4
 on_changes_command=$5
+username=$6
+email=$7
 repo=$GITHUB_REPOSITORY #owner and repository: ie: user/repo
-username=$GITHUB_ACTOR
 
 branch_name="automated-dependencies-update"
-email="noreply@github.com"
-remote_name="authenticated"
 pr_title=":arrow_up: Update dependencies"
 
 if [ -z "$token" ]; then
@@ -61,19 +60,10 @@ if git --no-pager diff | grep diff; then
 
     if [[ -z ${NO_GIT_CONFIG_CHANGE+x} ]]; then
         # configure git authorship
-        git config --global user.email $email
+        git config --global user.email "$email"
         git config --global user.name "$username"
     else
         echo "NO_GIT_CONFIG_CHANGE was set, not modifying .gitconfig"
-    fi
-
-    # Only add the remote if it doesn't already exist
-    if [[ $(git remote) == *$remote_name* ]]; then
-        echo "Remote already exists, skipping adding it."
-    else
-        echo "Adding remote $remote_name"
-        # format: https://[username]:[token]@github.com/[organization]/[repo].git
-        git remote add "$remote_name" "https://$username:$token@github.com/$repo.git"
     fi
 
     # execute command to run when changes are deteced, if provided
@@ -91,7 +81,7 @@ if git --no-pager diff | grep diff; then
     git commit -a -m "$pr_title" --signoff
 
     # push the changes
-    git push "$remote_name" -f -u
+    git push --force --set-upstream origin automated-dependencies-update
 
     echo "https://api.github.com/repos/$repo/pulls"
 
